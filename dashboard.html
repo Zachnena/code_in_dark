@@ -1,0 +1,502 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Comprehensive Website Scraper Dashboard</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+            
+            .header p {
+                font-size: 1.2em;
+                opacity: 0.9;
+            }
+            
+            .scan-info {
+                background: #34495e;
+                color: white;
+                padding: 20px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .scan-stat {
+                background: rgba(255,255,255,0.1);
+                padding: 15px;
+                border-radius: 8px;
+            }
+            
+            .scan-stat-number {
+                font-size: 2em;
+                font-weight: bold;
+                color: #3498db;
+            }
+            
+            .scan-stat-label {
+                font-size: 0.9em;
+                margin-top: 5px;
+                opacity: 0.8;
+            }
+            
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                padding: 30px;
+                background: #f8f9fa;
+            }
+            
+            .stat-card {
+                background: white;
+                border-radius: 10px;
+                padding: 25px;
+                text-align: center;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+            }
+            
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+            
+            .stat-number {
+                font-size: 3em;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            
+            .stat-label {
+                font-size: 1.1em;
+                color: #666;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .success { color: #27ae60; }
+            .error { color: #e74c3c; }
+            .info { color: #3498db; }
+            
+            .results {
+                padding: 30px;
+            }
+            
+            .section {
+                margin-bottom: 40px;
+            }
+            
+            .section h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+                color: #2c3e50;
+                border-bottom: 3px solid #3498db;
+                padding-bottom: 10px;
+            }
+            
+            .pages-scanned {
+                background: #e8f4f8;
+                border: 1px solid #b8daff;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .page-item {
+                background: white;
+                border-left: 4px solid #3498db;
+                padding: 10px;
+                margin-bottom: 8px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                font-family: monospace;
+                font-size: 0.9em;
+            }
+            
+            .page-item:last-child {
+                margin-bottom: 0;
+            }
+            
+            .error-list {
+                background: #fff5f5;
+                border: 1px solid #fed7d7;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .error-item {
+                background: white;
+                border-left: 4px solid #e74c3c;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            
+            .error-item:last-child {
+                margin-bottom: 0;
+            }
+            
+            .error-url {
+                word-break: break-all;
+                font-family: monospace;
+                font-size: 0.9em;
+                color: #e74c3c;
+            }
+            
+            .no-errors {
+                background: #f0fff4;
+                border: 1px solid #9ae6b4;
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+                color: #27ae60;
+                font-size: 1.1em;
+            }
+            
+            .timestamp {
+                text-align: center;
+                color: #666;
+                font-size: 0.9em;
+                padding: 20px;
+                border-top: 1px solid #eee;
+            }
+            
+            .progress-bar {
+                background: #ecf0f1;
+                border-radius: 10px;
+                height: 20px;
+                margin-top: 10px;
+                overflow: hidden;
+            }
+            
+            .progress-fill {
+                height: 100%;
+                transition: width 0.3s ease;
+            }
+            
+            .progress-success {
+                background: linear-gradient(90deg, #27ae60, #2ecc71);
+            }
+            
+            .progress-error {
+                background: linear-gradient(90deg, #e74c3c, #c0392b);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🔍 Comprehensive Website Scraper Dashboard</h1>
+                <p>Multi-page scan results for: <strong>https://qa1parts.cat.com/en/catcorp</strong></p>
+            </div>
+            
+            <div class="scan-info">
+                <div class="scan-stat">
+                    <div class="scan-stat-number">4</div>
+                    <div class="scan-stat-label">Pages Scanned</div>
+                </div>
+                <div class="scan-stat">
+                    <div class="scan-stat-number">298</div>
+                    <div class="scan-stat-label">Total Links Found</div>
+                </div>
+                <div class="scan-stat">
+                    <div class="scan-stat-number">43</div>
+                    <div class="scan-stat-label">Total Images Found</div>
+                </div>
+                <div class="scan-stat">
+                    <div class="scan-stat-number">49</div>
+                    <div class="scan-stat-label">Total Errors Found</div>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number success">285</div>
+                    <div class="stat-label">Working Links</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-success" style="width: 95.6%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number error">13</div>
+                    <div class="stat-label">Broken Links</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-error" style="width: 4.4%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number success">7</div>
+                    <div class="stat-label">Working Images</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-success" style="width: 16.3%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number error">36</div>
+                    <div class="stat-label">Missing Images</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-error" style="width: 83.7%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results">
+                <div class="section">
+                    <h2>� Pages Scanned (4)</h2>
+                    <div class="pages-scanned">
+                        <div class="page-item">📄 https://qa1parts.cat.com/en/catcorp/PartLookup</div><div class="page-item">📄 https://qa1parts.cat.com/en/catcorp/ShopAllCategories</div><div class="page-item">📄 https://qa1parts.cat.com/en/catcorp</div><div class="page-item">📄 https://qa1parts.cat.com/en/catcorp/category/shop-by-attachment</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>�🔗 Broken Links (13)</h2>
+                    <div class="error-list">
+        <div class="error-item">
+            <div class="error-url">https://www.linkedin.com/company/caterpillar-inc</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://catcrm--crmiuat.sandbox.my.site.com/HelpCenter/s?language=en_US&geoloc=US&userstate=Loggedout&eSite=CATCorp</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://www.cat.com/en_US/social.html</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://catcrm--crmiuat.sandbox.my.site.com/HelpCenter/s/contactsupport?language=en_US&geoloc=US&userstate=Loggedout&eSite=CATCorp</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://www.cat.com/en_US/company.html</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://privacyportal.onetrust.com/webform/ec73b9a1-eecd-48d1-a789-fa7761e54a29/cf3dfa36-1b53-4ec9-8dfc-e84988613fa1</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://privacyportal.onetrust.com/ui/#/preferences/multipage/login/60104e41-6ba2-4141-9154-90f8532cbdb9</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://www.facebook.com/caterpillarinc</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://instagram.com/caterpillarinc</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://qa1parts.cat.com/en/catcorp/servicerecommendations</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://qa1parts.cat.com/en/catcorp/ENTER DEALER FULL URL - REQUIRED</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://twitter.com/CaterpillarInc</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://www.youtube.com/CatProducts</div>
+        </div>
+        </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🖼️ Missing Images (36)</h2>
+                    <div class="error-list">
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-7f918-c44be?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160119-47017-57566?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-e2efe-5f475?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20190918-0aa57-9d63c?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-d9501-70a7d?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20200506-4f932-1ce12?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160413-58737-10169?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-efcd3-89350?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-ba825-6ac2c?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160714-27372-43375?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20190918-24b97-7f786?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160628-52702-49940?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240314-3513d-363e9?fit=fit%2C1&wid=1200</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160119-49767-50647?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20180306-34027-63636?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://s7d2.scene7.com/is/image/Caterpillar/catcorp?fit=fit%2C1&fmt=png-alpha&hei=70&op_usm=1.75%2C0.3%2C2%2C0&qlt=85&resMode=sharp2&wid=128</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20131107-43752-15379?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20180306-36800-10227?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240108-a7419-8d19b?fit=wrap%2C1&fmt=webp&hei=296&wid=1200</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20200618-c194a-b3840?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-1b650-344b7?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-9e2f8-c8c38?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20160329-31197-40448?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-e5a36-f82c7?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-04129-4f82a?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20141014-36221-12511?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-3b0c9-9d4b8?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-fc685-628aa?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240509-e4f4b-92c32?fit=fit%2C1&hei=256&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-52df1-a867e?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-106d2-4cf6d?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20240424-290cd-12e19?fit=fit%2C1&hei=162&wid=162</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20130806-66457-07442?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20200602-aeb29-b40e8?fit=fit%2C1&fmt=webp&hei=384&wid=384</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20250107-dc586-98c49?fit=fit%2C1&hei=128&wid=128</div>
+        </div>
+        
+        <div class="error-item">
+            <div class="error-url">https://caterpillar.scene7.com/is/image/Caterpillar/CM20250523-bb6c0-18ad0?fit=fit%2C1&fmt=webp&hei=347&wid=768</div>
+        </div>
+        </div>
+                </div>
+            </div>
+            
+            <div class="timestamp">
+                Last updated: 2025-07-09 20:49:40 | Comprehensive multi-page scan completed
+            </div>
+        </div>
+    </body>
+    </html>
+    
